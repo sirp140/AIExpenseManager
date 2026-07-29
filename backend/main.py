@@ -6,6 +6,7 @@ from backend.database import Base
 from backend.database import engine
 from backend.database import SessionLocal
 from fastapi import Depends
+from fastapi import HTTPException
 
 app = FastAPI()
 
@@ -45,5 +46,28 @@ def show_expenses(db = Depends(get_db)):
     expenses = db.query(ExpenseTable).all()
     return expenses
 
-@app.get("/expense_id")
-def get_expense_id()
+#returns the user requested specific row by getting id no
+@app.get("/expenses/{id}")
+def get_expense(id: int, db = Depends(get_db)):
+    #if id = str or neg or big no throw error?
+    requested_expense = db.query(ExpenseTable).filter(ExpenseTable.id == id).first()
+    if requested_expense is None:
+        raise HTTPException(
+            status_code = 404,
+            detail = "Expense not found"
+        )
+    return requested_expense
+
+#delete an expense
+@app.delete("/expenses/{id}")
+def del_expense(id: int, db = Depends(get_db)):
+    del_expense = db.query(ExpenseTable).filter(ExpenseTable.id == id).first()
+    if del_expense is None:
+        raise HTTPException(
+            status_code=404,
+            detail = "Expense not found"
+        )
+    db.delete(del_expense)
+    db.commit()
+    return {"message": "Expense deleted successfully"}
+    
