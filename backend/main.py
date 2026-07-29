@@ -60,7 +60,7 @@ def get_expense(id: int, db = Depends(get_db)):
 
 #delete an expense
 @app.delete("/expenses/{id}")
-def del_expense(id: int, db = Depends(get_db)):
+def delete_expense(id: int, db = Depends(get_db)):
     del_expense = db.query(ExpenseTable).filter(ExpenseTable.id == id).first()
     if del_expense is None:
         raise HTTPException(
@@ -70,4 +70,20 @@ def del_expense(id: int, db = Depends(get_db)):
     db.delete(del_expense)
     db.commit()
     return {"message": "Expense deleted successfully"}
-    
+
+        
+@app.put("/expenses/{id}")
+def update_expense(id: int, expense: Expense, db = Depends(get_db)):
+    update_expen = db.query(ExpenseTable).filter(ExpenseTable.id == id).first()
+    if update_expen is None:
+        raise HTTPException(
+            status_code = 404,
+            detail = "Expense not found"
+        )
+    update_expen.amount = expense.amount
+    update_expen.category = expense.category
+    update_expen.description = expense.description
+
+    db.commit()
+    db.refresh(update_expen)
+    return update_expen
