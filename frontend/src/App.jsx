@@ -4,7 +4,7 @@ import './App.css'
 
 function App() {
   
-  return <div>
+  return <div className="expense-manager">
     <h1> Expense Manager </h1>
     <h2> Add Expense </h2>
 
@@ -12,6 +12,7 @@ function App() {
     <label>Category: <input /></label>
     <label>Description: <input /></label>
 
+    <button>Add expense </button>
 
   </div>
   }
